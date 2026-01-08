@@ -42,7 +42,7 @@ pipeline {
             steps {
                 sh '''
                 docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${CONTAINERNAME}:${IMAGE_TAG}
-                docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                docker push ${CONTAINERNAME}:${IMAGE_TAG}
                 '''
             }
         }
