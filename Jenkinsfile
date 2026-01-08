@@ -2,12 +2,14 @@ pipeline {
     agent any
 
     environment {
+        REGISTRY   = "python01registry.azurecr.io"
         IMAGE_NAME = "pythonsample"
+        CONTAINERNAME = "python01registry.azurecr.io/pythonsample"
         IMAGE_TAG  = "${BUILD_NUMBER}"
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
@@ -15,27 +17,46 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh """
-                    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
-                    """
+                sh '''
+                docker --version
+                docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .
+                '''
+            }
+        }
+
+        stage('Login to Registry') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-registry-creds',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    '''
                 }
             }
         }
 
-        stage('Verify Image') {
+        stage('Push Image') {
             steps {
-                sh "docker images | grep ${IMAGE_NAME}"
+                sh '''
+                docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${CONTAINERNAME}:${IMAGE_TAG}
+                docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
             }
         }
     }
 
     post {
         success {
-            echo "Docker image built successfully "
+            echo "Docker image pushed successfully "
         }
         failure {
-            echo "Build failed "
+            echo "Pipeline failed "
+        }
+        always {
+            sh 'docker logout || true'
         }
     }
 }
