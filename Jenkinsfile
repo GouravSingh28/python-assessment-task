@@ -32,7 +32,7 @@ pipeline {
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
                     sh '''
-                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    echo "$DOCKER_PASS" | docker login python01registry.azurecr.io -u "$DOCKER_USER" --password-stdin
                     '''
                 }
             }
