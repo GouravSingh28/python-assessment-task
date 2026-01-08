@@ -1,12 +1,10 @@
-resource "azurerm_resource_group" "aks_rg" {
-  name     = var.resource_group_name
-  location = var.location
+data "azurerm_resource_group" "existing_rg" {
+  name = var.resource_group_name
 }
-
 resource "azurerm_kubernetes_cluster" "aks" {
   name                = var.aks_name
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
+  location            = data.azurerm_resource_group.existing_rg.location
+  resource_group_name = data.azurerm_resource_group.existing_rg.name
   dns_prefix          = "aksdemo"
 
   default_node_pool {

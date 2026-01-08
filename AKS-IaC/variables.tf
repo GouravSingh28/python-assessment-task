@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  default = "demo_new"
+  description = "demo_new"
 }
 
 variable "location" {
