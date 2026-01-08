@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  default = "rg-aks-demo"
+  default = "demo_new"
 }
 
 variable "location" {
